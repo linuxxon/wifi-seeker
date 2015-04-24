@@ -1,14 +1,15 @@
-#define right_power  3
-#define right_direction 4
-#define left_power   11
-#define left_direction 12
+#define left_power 3
+#define left_direction 4 
+#define right_power  10
+#define right_direction 12
 #define ultraSound0in 5
 #define ultraSound0out 6
+#define button 7
 
 #include <PWM.h>
 
 int32_t frequency = 500; //frequency (in Hz)
-int PWM_dutyCycle=230;
+int speed;
 long distance;
 
 void setup() {
@@ -31,70 +32,40 @@ void setup() {
 
 }
 
-
-
-void rightForward () {  
-  //digitalWrite(right_forward, LOW);
-  
-}      
-void leftForward () {
-    //digitalWrite(left_forward, LOW);
-
-}
-void rightBackward () {
-    //digitalWrite(right_backward, LOW);
-}
-void leftBackward () {
-    //digitalWrite(left_backward, LOW);
-}
-
 void stop(){
-  //digitalWrite(right_direction,LOW);
-  //digitalWrite(left_direction,LOW);
-  //delay(10);
-  
+  digitalWrite(right_direction,LOW); // Brake
+  digitalWrite(left_direction,LOW); // Brake
+  delay(600);
   pwmWrite(right_power, 0);
   pwmWrite(left_power, 0);
-  digitalWrite(9,HIGH); // Brake
-  digitalWrite(8,HIGH); // Brake
 }
 
 
 void forward() {
   digitalWrite(right_direction,HIGH);
   digitalWrite(left_direction,HIGH);
-  pwmWrite(right_power, PWM_dutyCycle);
-  pwmWrite(left_power, PWM_dutyCycle);
+  pwmWrite(right_power, speed);
+  pwmWrite(left_power, speed);
 }
 
-void backward() {
-//   digitalWrite(right_backward, HIGH);
-//   digitalWrite(left_backward, HIGH);
-//  rightBackward();
-//  leftBackward();
+void spin() {
+  digitalWrite(right_direction,HIGH);
+  digitalWrite(left_direction,LOW);
+  pwmWrite(right_power, speed);
+  pwmWrite(left_power, speed);
 }
-void left() {
-//   digitalWrite(right_forward, HIGH);
-//   digitalWrite(right_backward, HIGH);
-//   digitalWrite(left_forward, LOW);
-//   digitalWrite(left_backward, LOW);
-}
-void right() {
-//   digitalWrite(right_forward, LOW);
-//   digitalWrite(right_backward, LOW);
-//   digitalWrite(left_forward, HIGH);
-//   digitalWrite(left_backward, HIGH);
-}
+
 
 
 
 void loop() {   
+  digitalWrite(9, LOW);
+  digitalWrite(8, LOW);
   sendUltrasoundPulse(); 
   distance = pulseIn(ultraSound0in, HIGH);
   distance = microsecondsToCentimeters(distance);
   
-  digitalWrite(8,LOW);
-  digitalWrite(9,LOW);
+  speed = analogRead(5)/4;
   
   if (distance<50) {
     stop();
@@ -104,11 +75,10 @@ void loop() {
   delay(5);
   
   Serial.print(distance);
-  Serial.print("\n");
-  
+  Serial.print("\n");  
 
-  
-  forward();  
+  forward(); 
+
 }
 
 
