@@ -1,6 +1,7 @@
 /*
-Fungerande kod för demovisning 2
+Koden som användes vid demo2
 */
+
 
 #define left_power 3
 #define left_direction 4 
@@ -33,6 +34,7 @@ void setup() {
  // might not need to set both these pins, due to being on the same timer
  SetPinFrequencySafe(right_power, frequency); 
  SetPinFrequencySafe(left_power, frequency); 
+ 
 
 }
 
@@ -74,25 +76,23 @@ void spinRight() {
 }
 
 void demo () {
-  forward();
-  delay(250);
+  backward();
+  delay(2000);
   spinRight();
-  delay(5000);
-  forward();
-  delay(250);
+  delay(2000);
   spinLeft();
-  delay(5000);
+  delay(2000);
 }
 void loop() {   
-  digitalWrite(9, LOW);
-  digitalWrite(8, LOW);
+  
   sendUltrasoundPulse(); 
   distance = pulseIn(ultraSound0in, HIGH);
   distance = microsecondsToCentimeters(distance);
   
   speed = analogRead(5)/4;
   
-  if (distance<50) {
+  
+  if (distance<50 && distance != 0) {
     stop();
     delay(5000);
     demo();
