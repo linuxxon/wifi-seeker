@@ -1,0 +1,40 @@
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:padding="5dp"> >
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Check USB arduino connection"
+        android:onClick="checkConnection"/>
+    
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Start listening to robot"
+        android:onClick="listenToRobot"/>
+    
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Manual wifi scan"
+        android:onClick="manualScan"/>
+    
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Save wifi data"
+        android:onClick="saveLog"/>
+    
+    <TextView
+        android:id="@+id/debug_window"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"/>
+        <!-- android:layout_alignParentBottom="true" -->
+    
+
+</LinearLayout>
