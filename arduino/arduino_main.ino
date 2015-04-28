@@ -11,7 +11,8 @@
 #include <PWM.h>
 
 int32_t frequency = 500; //frequency (in Hz)
-int speed=0,distanceFront=0,distanceLeft=0,errorWall=0,wallDistance=20;
+int speed=0,distanceFront=0,distanceLeft=0,errorWall=0,wallDistance=20,oldDistanceFront=0,oldDistanceLeft=0;
+bool isColliding=false;
 
 void setup() {
   
@@ -75,22 +76,29 @@ void forward() {
 void fastLeft() {
   digitalWrite(right_direction,HIGH);
   digitalWrite(left_direction,LOW);
-  pwmWrite(right_power, speed*3);
-  pwmWrite(left_power, speed*3);
+  pwmWrite(right_power, 255);
+  pwmWrite(left_power, 255);
 }
 
 void fastRight() {
   digitalWrite(right_direction,LOW);
   digitalWrite(left_direction,HIGH);
-  pwmWrite(right_power, speed*3);
-  pwmWrite(left_power, speed*3);
+  pwmWrite(right_power, 255);
+  pwmWrite(left_power, 255);
 }
 
 void loop() {   
-  distanceFront = getDistanceFront();  
-  if (distanceFront>0 && distanceFront<30) {
-    stop();
-    delay(2000);
+  oldDistanceFront = distanceFront;
+  distanceFront = getDistanceFront(); 
+  isColliding=false; 
+  if (distanceFront>0 && oldDistanceFront>0 && distanceFront<40) {
+    isColliding=true;
+    //stop();
+    //delay(2000);
+    fastRight();
+    delay(100);
+    forward();
+    delay(50);
     //start(250);
   }
   
@@ -98,20 +106,19 @@ void loop() {
   
   delay(50); // Wait for echoes
   
+  oldDistanceLeft=distanceLeft;
   distanceLeft = getDistanceLeft(); 
-  if (distanceLeft>0 && distanceLeft < 20) {
-    //spinRight();
+  if (!isColliding && distanceLeft>0 && oldDistanceLeft>0 && distanceLeft < 20) {
     fastRight();
-    delay(100);
+    delay(50);
     forward();
-    delay(500);
+    delay(100);
   }  
-  if (distanceLeft> 0 && distanceLeft > 30) {
-    //spinRight();
+  if (!isColliding && (distanceLeft==0 || distanceLeft > 30)) {
     fastLeft();
-    delay(100);
+    delay(50);
     forward();
-    delay(500);
+    delay(100);
   } 
   
   Serial.print("Speed: ");
@@ -133,7 +140,7 @@ int getDistanceFront() {
   digitalWrite(ultraSound0out, HIGH);
   delayMicroseconds(10);
   digitalWrite(ultraSound0out, LOW);  
-  distance = pulseIn(ultraSound0in, HIGH,5000);
+  distance = pulseIn(ultraSound0in, HIGH,8000);
   distance = microsecondsToCentimeters(distance);
   return distance;
 }
