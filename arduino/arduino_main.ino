@@ -32,15 +32,21 @@ void setup() {
  // might not need to set both these pins, due to being on the same timer
  SetPinFrequencySafe(right_power, frequency); 
  SetPinFrequencySafe(left_power, frequency); 
+ start(250);
 }
 
 
 void slowRight (){
   digitalWrite(right_direction,LOW);
   digitalWrite(left_direction,HIGH);
-  pwmWrite(left_power,speed*0.8);
-  pwmWrite(right_power,speed*0.8);
-  
+  pwmWrite(left_power,speed*2);
+  pwmWrite(right_power,speed*2);  
+}
+void slowLeft (){
+  digitalWrite(right_direction,HIGH);
+  digitalWrite(left_direction,LOW);
+  pwmWrite(left_power,speed);
+  pwmWrite(right_power,speed);  
 }
 
 
@@ -52,64 +58,61 @@ void stop(){
   pwmWrite(left_power, 0);
 }
 
-void start(){
-  
+void start(int time){  
+  digitalWrite(right_direction,HIGH);
+  digitalWrite(left_direction,HIGH);
+  pwmWrite(right_power, 255);
+  pwmWrite(left_power, 255);
+  delay(time);
+}
+void forward() {
   digitalWrite(right_direction,HIGH);
   digitalWrite(left_direction,HIGH);
   pwmWrite(right_power, speed);
   pwmWrite(left_power, speed);
 }
-void forward() {
-  digitalWrite(right_direction,HIGH);
-  digitalWrite(left_direction,HIGH);
-  pwmWrite(right_power, (speed/2));
-  pwmWrite(left_power, (speed/2));
-}
 
-void spinLeft() {
+void fastLeft() {
   digitalWrite(right_direction,HIGH);
   digitalWrite(left_direction,LOW);
-  pwmWrite(right_power, speed*2);
-  pwmWrite(left_power, speed*2);
+  pwmWrite(right_power, speed*3);
+  pwmWrite(left_power, speed*3);
 }
 
-void spinRight() {
+void fastRight() {
   digitalWrite(right_direction,LOW);
   digitalWrite(left_direction,HIGH);
-  pwmWrite(right_power, speed*2);
-  pwmWrite(left_power, speed*2);
+  pwmWrite(right_power, speed*3);
+  pwmWrite(left_power, speed*3);
 }
 
 void loop() {   
   distanceFront = getDistanceFront();  
-  if (distanceFront<50) {
+  if (distanceFront>0 && distanceFront<30) {
     stop();
-    delay(5000);
-    start();
+    delay(2000);
+    //start(250);
   }
   
   speed = analogRead(5)/4;
   
-  //errorWall = wallDistance - distanceLeft;
-  delay(300);
+  delay(50); // Wait for echoes
   
   distanceLeft = getDistanceLeft(); 
-  while (distanceLeft < 15) {
-    distanceLeft = getDistanceLeft(); 
+  if (distanceLeft>0 && distanceLeft < 20) {
     //spinRight();
-    slowRight();
-    delay(20);
-    //foward();
-    //delay(500);
-  }
-  //else if (errorWall < -15) {
+    fastRight();
+    delay(100);
+    forward();
+    delay(500);
+  }  
+  if (distanceLeft> 0 && distanceLeft > 30) {
     //spinRight();
-    //delay(500); 
-    //forward();
-    //delay(500);
-  //} 
-  
-  //delay(50);
+    fastLeft();
+    delay(100);
+    forward();
+    delay(500);
+  } 
   
   Serial.print("Speed: ");
   Serial.print(speed);  
@@ -130,7 +133,7 @@ int getDistanceFront() {
   digitalWrite(ultraSound0out, HIGH);
   delayMicroseconds(10);
   digitalWrite(ultraSound0out, LOW);  
-  distance = pulseIn(ultraSound0in, HIGH);
+  distance = pulseIn(ultraSound0in, HIGH,5000);
   distance = microsecondsToCentimeters(distance);
   return distance;
 }
@@ -142,7 +145,7 @@ int getDistanceLeft() {
   digitalWrite(ultraSound1out, HIGH);
   delayMicroseconds(10);
   digitalWrite(ultraSound1out, LOW);  
-  distance = pulseIn(ultraSound1in, HIGH);
+  distance = pulseIn(ultraSound1in, HIGH,8000);
   distance = microsecondsToCentimeters(distance);
   return distance;
 }
