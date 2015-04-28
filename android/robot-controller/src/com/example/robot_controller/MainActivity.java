@@ -98,7 +98,7 @@ public class MainActivity extends Activity {
 //                	Toast.makeText(getBaseContext(), "Data Receieved"+intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA").get(0), Toast.LENGTH_SHORT).show();                    
                     List<String> commands = intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA");
               
-                    logger.append("Command received: " + commands.get(0) + "\n");
+                    debugOut.append("Command received: " + commands.get(0) + "\n");
                     debugOut.append("Command buffer: ");
                     for (String command : commands) {
                     	debugOut.append(command + " ");
