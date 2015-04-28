@@ -28,6 +28,17 @@
         android:layout_height="wrap_content"
         android:text="Save wifi data"
         android:onClick="saveLog"/>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Hotspot on"
+        android:onClick="hotspotOn"/>
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Hotspot off"
+        android:onClick="hotspotOff"/>
     
     <TextView
         android:id="@+id/debug_window"

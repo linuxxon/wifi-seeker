@@ -242,7 +242,15 @@ public class MainActivity extends Activity {
 		} catch (IOException ioe) {ioe.printStackTrace();}
 		
 		debugOut.append("Data saved\n");
-	}	
-	
+	}
+
+    public void hotspotOn(View view) {
+        WifiApManager.setHotspotState(this,true);
+        debugOut.append("Hotspot turning on\n");
+    }
+    public void hotspotOff(View view) {
+        WifiApManager.setHotspotState(this, false);
+        debugOut.append("Hotspot turning off\n");
+    }
 }
  
