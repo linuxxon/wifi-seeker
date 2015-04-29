@@ -2,16 +2,18 @@
 #define left_direction 4 
 #define right_power  10
 #define right_direction 12
-#define ultraSound0in 5
-#define ultraSound0out 6
-#define ultraSound1in 7
-#define ultraSound1out 8
+#define ultraSound0in 9
+#define ultraSound0out 13
+#define ultraSound1in 5
+#define ultraSound1out 6
+#define ultraSound2in 7
+#define ultraSound2out 8
 #define button 0
 
 #include <PWM.h>
 
 int32_t frequency = 500; //frequency (in Hz)
-int speed=0,distanceFront=0,distanceLeft=0,errorWall=0,wallDistance=20,oldDistanceFront=0,oldDistanceLeft=0;
+int speed=0,distanceFront=0,oldDistanceFront=0,distanceLeftFront=0,oldDistanceLeftFront=0,distanceLeft=0,oldDistanceLeft=0;
 bool isColliding=false;
 
 void setup() {
@@ -23,9 +25,9 @@ void setup() {
  pinMode(ultraSound0in, INPUT);
  pinMode(ultraSound0out,OUTPUT); 
  pinMode(ultraSound1in, INPUT);
- pinMode(ultraSound1out,OUTPUT); 
- pinMode(8,OUTPUT);
- pinMode(9,OUTPUT);
+ pinMode(ultraSound1out,OUTPUT);
+ pinMode(ultraSound2in, INPUT);
+ pinMode(ultraSound2out,OUTPUT);
  InitTimersSafe();  //init Timers except Timer0
  
  Serial.begin(9600);
@@ -40,8 +42,8 @@ void setup() {
 void slowRight (){
   digitalWrite(right_direction,LOW);
   digitalWrite(left_direction,HIGH);
-  pwmWrite(left_power,speed*2);
-  pwmWrite(right_power,speed*2);  
+  pwmWrite(left_power,200);
+  pwmWrite(right_power,200);  
 }
 void slowLeft (){
   digitalWrite(right_direction,HIGH);
@@ -90,45 +92,66 @@ void fastRight() {
 void loop() {   
   oldDistanceFront = distanceFront;
   distanceFront = getDistanceFront(); 
-  isColliding=false; 
-  if (distanceFront>0 && oldDistanceFront>0 && distanceFront<40) {
-    isColliding=true;
-    //stop();
-    //delay(2000);
-    fastRight();
-    delay(100);
-    forward();
-    delay(50);
-    //start(250);
-  }
-  
-  speed = analogRead(5)/4;
   
   delay(50); // Wait for echoes
+  oldDistanceLeftFront = distanceLeftFront;
+  distanceLeftFront = getDistanceLeftFront(); 
   
+  delay(50); // Wait for echoes
   oldDistanceLeft=distanceLeft;
   distanceLeft = getDistanceLeft(); 
-  if (!isColliding && distanceLeft>0 && oldDistanceLeft>0 && distanceLeft < 20) {
-    fastRight();
-    delay(50);
-    forward();
-    delay(100);
-  }  
-  if (!isColliding && (distanceLeft==0 || distanceLeft > 30)) {
-    fastLeft();
-    delay(50);
-    forward();
-    delay(100);
-  } 
+  
+  speed = analogRead(5)/4;
   
   Serial.print("Speed: ");
   Serial.print(speed);  
   Serial.print(" Front sensor: ");
   Serial.print(distanceFront);
+  Serial.print(" Front-left sensor: ");
+  Serial.print(distanceLeftFront);
   Serial.print(" Left sensor: ");
   Serial.print(distanceLeft);
   Serial.print("\n");  
-
+  
+  if ((distanceFront>0 && oldDistanceFront>0 && distanceFront<70)) {
+    //stop();
+    //delay(2000);
+    fastRight();
+    delay(100);
+    fastLeft();
+    delay(15); // Brake the turn
+    //forward();
+    //delay(50);
+    //start(250);
+  }
+  else if (distanceLeftFront>0 && oldDistanceLeftFront>0 && distanceLeftFront<50) {
+    fastRight();
+    delay(50);
+    forward();
+    delay(100);
+  }
+  else {        
+    if (distanceLeft>0 && oldDistanceLeft>0 && distanceLeft < 25) {
+      fastRight();
+      delay(30);
+      forward();
+      delay(100);
+    }  
+    if (distanceLeft > 30 && distanceLeft < 60) {
+      fastLeft();
+      delay(30);
+      forward();
+      delay(100);
+    } 
+    if (distanceLeft ==0 || distanceLeft > 60) {
+      fastLeft();
+      delay(100);
+      fastRight();
+      delay(15); // Brake the turn
+      forward();
+      delay(100);
+    }
+  }
   forward(); 
 
 }
@@ -145,7 +168,7 @@ int getDistanceFront() {
   return distance;
 }
 
-int getDistanceLeft() { 
+int getDistanceLeftFront() { 
   int distance=0;
   digitalWrite(ultraSound1out, LOW);
   delayMicroseconds(2);
@@ -153,6 +176,18 @@ int getDistanceLeft() {
   delayMicroseconds(10);
   digitalWrite(ultraSound1out, LOW);  
   distance = pulseIn(ultraSound1in, HIGH,8000);
+  distance = microsecondsToCentimeters(distance);
+  return distance;
+}
+
+int getDistanceLeft() { 
+  int distance=0;
+  digitalWrite(ultraSound2out, LOW);
+  delayMicroseconds(2);
+  digitalWrite(ultraSound2out, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(ultraSound2out, LOW);  
+  distance = pulseIn(ultraSound2in, HIGH,8000);
   distance = microsecondsToCentimeters(distance);
   return distance;
 }
