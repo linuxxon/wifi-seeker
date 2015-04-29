@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
                 } else if ("primavera.arduino.intent.action.REQUEST_RESPONSE".equals(action)) {
                     // USB command received
 //                	Toast.makeText(getBaseContext(), "Data Receieved"+intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA").get(0), Toast.LENGTH_SHORT).show();                    
-                    List<String> commands = intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA");                   
+                    List<String> commands = intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA");
               
                     debugOut.append("Command received: " + commands.get(0) + "\n");
                     debugOut.append("Command buffer: ");
@@ -105,14 +105,20 @@ public class MainActivity extends Activity {
                     }
                     debugOut.append("\n");
                     
-                    if (commands.get(0).equals("wifi-scan-plz")) {
+                    if (commands.get(0).equals("scanWifi")) {
                 		if (!logAP) {
 //                			debugOut.append("Command received: 'button wifi scan'\n");
                 			wifi.startScan();
                 			logger.append("Button scan " + timeString.format(Calendar.getInstance().getTime()) + "\n");
                 			logAP=true;
                 		}	
-                    }                    
+                    }
+                    else if (commands.get(0).equals("hotspotMode")) {
+                        hotspotOn(null);
+                    }
+                    else if (commands.get(0).equals("scanningMode")) {
+                        hotspotOff(null);
+                    }
                 }       		
                 else { 
                 	// Wifi receiving
@@ -145,7 +151,7 @@ public class MainActivity extends Activity {
         filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION); // Wifi "action"
         registerReceiver(wifiAndUsbReceiver, filter);
 
-        mDataAdapter = new ArrayAdapter<ByteArray>(this, android.R.layout.simple_list_item_1, mTransferedDataList);
+        /*mDataAdapter = new ArrayAdapter<ByteArray>(this, android.R.layout.simple_list_item_1, mTransferedDataList);
 //        setListAdapter(mDataAdapter); // Potential problem
 
         byte[] arr = {0x56,0x45,0x32};
@@ -153,7 +159,7 @@ public class MainActivity extends Activity {
         tD.add(arr);
         //ByteArray transferedData = new ByteArray().add(arr);
         mTransferedDataList.add(tD);
-        mDataAdapter.notifyDataSetChanged();        
+        mDataAdapter.notifyDataSetChanged();*/
 	}
 	
 	public void listenToRobot(View view) {
@@ -185,6 +191,7 @@ public class MainActivity extends Activity {
 	    HashMap<String, UsbDevice> usbDeviceList = usbManager.getDeviceList();
 	    debugOut.append("Number of devices: " + usbDeviceList.size() + "\n");
 	    Iterator<UsbDevice> deviceIterator = usbDeviceList.values().iterator();
+
 	    if (deviceIterator.hasNext()) {	    	
 	        UsbDevice tempUsbDevice = deviceIterator.next();
 
@@ -203,17 +210,19 @@ public class MainActivity extends Activity {
 	            }            
 	        }
 	    }
-	    
+
 	    if (usbDevice == null) {
 	    	debugOut.append("No device found!\n");
+            Toast.makeText(this, "No device found", Toast.LENGTH_SHORT).show();
 //	        Toast.makeText(getBaseContext(), getString(R.string.no_device_found), Toast.LENGTH_LONG).show();
 	        
 	    } else {
 	    	debugOut.append("Device found!\n");
+            Toast.makeText(this, "Device found", Toast.LENGTH_SHORT).show();
 	        Intent startIntent = new Intent(getApplicationContext(), ComService.class);
 	        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, startIntent, 0);
 	        usbManager.requestPermission(usbDevice, pendingIntent);
-	    }		
+	    }
 	}
 	
 	public void stopRobot(View view) {
@@ -231,7 +240,7 @@ public class MainActivity extends Activity {
 	
 	public void saveLog(View view) {
 		try {
-			File myFile = new File("/sdcard/wifiLog.txt");
+			File myFile = new File("/sdcard/www/wifiLog.txt");
 	        myFile.createNewFile();
 	        FileOutputStream fOut = new FileOutputStream(myFile);
 	        OutputStreamWriter myOutWriter =new OutputStreamWriter(fOut);
@@ -242,7 +251,19 @@ public class MainActivity extends Activity {
 		} catch (IOException ioe) {ioe.printStackTrace();}
 		
 		debugOut.append("Data saved\n");
-	}	
-	
+	}
+
+    public void hotspotOn(View view) {
+        // As the hotspot is used to view results - save them to the webserver
+        saveLog(view);
+
+        // Turn on the hotspot
+        WifiApManager.setHotspotState(this,true);
+        debugOut.append("Hotspot turning on\n");
+    }
+    public void hotspotOff(View view) {
+        WifiApManager.setHotspotState(this, false);
+        debugOut.append("Hotspot turning off\n");
+    }
 }
  

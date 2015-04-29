@@ -38,8 +38,8 @@ import java.util.ArrayList;
 
 public class ComService extends Service {
 
-    private final static String TAG = "ArduinoCommunicatorService";
-    private final static boolean DEBUG = true;
+    private final static String TAG = "ArduinoCommunicator";
+    private final static boolean DEBUG = false;
 
     private boolean mIsRunning = false;
     private SenderThread mSenderThread;
@@ -213,7 +213,7 @@ public class ComService extends Service {
                         temp = "";
                     }
                     else
-                        temp += buyet.toString();
+                        temp += (char) buyet.byteValue();
                 }
                 // Add remaining bytes back to buffer
                 mSavedData.clear();
@@ -221,9 +221,11 @@ public class ComService extends Service {
                     mSavedData.add(b);
 
                 // Send back ArrayList with commands
-                Intent sIntent = new Intent("primavera.arduino.intent.action.REQUEST_RESPONSE");
-                sIntent.putExtra("primavera.arduino.intent.extra.DATA", commandArray);
-                sendBroadcast(sIntent);
+                if (commandArray.size() > 0) {
+                    Intent sIntent = new Intent("primavera.arduino.intent.action.REQUEST_RESPONSE");
+                    sIntent.putExtra("primavera.arduino.intent.extra.DATA", commandArray);
+                    sendBroadcast(sIntent);
+                }
             }
             else if (SEND_DATA_INTENT.equals(action)) {
                 final byte[] dataToSend = intent.getByteArrayExtra(DATA_EXTRA);
