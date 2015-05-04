@@ -1,0 +1,42 @@
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+<script>
+$(function() {
+$("#test").click(function(e) {
+  relativeX = e.pageX;
+  relativeY = e.pageY;
+ // alert(relativeX+':'+relativeY);
+
+ var color = '#EE0DD7';
+        var size = '7px';
+        $("body").append(
+           $('<div></div>')
+                 .css('position', 'absolute')
+                 .css('top', relativeY + 'px')
+                 .css('left', relativeX + 'px')
+                 .css('width', size)
+                 .css('height', size)
+                 .css('background-color', color) );
+});
+});
+
+
+</script>
+</head>
+
+<body>
+
+<div >
+  <div>
+    <div>
+      <a id="test">
+  <img class="demo-box" src="http://i.imgur.com/sYyFoCF.png" />
+      </a>
+    </div>
+    </div>
+</div>
+
+
+</body>
+</html>

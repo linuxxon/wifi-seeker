@@ -1,0 +1,46 @@
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+<script>
+$(function() {
+$("#test").click(function(e) {
+  relativeX = e.pageX;
+  relativeY = e.pageY;
+ // alert(relativeX+':'+relativeY);
+
+ var color = '#EE0DD7';
+        var size = '8px';
+        $("#deltapos")
+                 .css('position', 'absolute')
+                 .css('top', relativeY-4 + 'px')
+                 .css('left', relativeX-4 + 'px')
+                 .css('width', size)
+                 .css('height', size)
+                 .css('background-color', color) 
+		 .css('z-index', '5');
+			
+	
+});
+});
+
+
+</script>
+</head>
+
+<body>
+<div id="deltapos">
+</div>
+
+<div >
+  <div>
+    <div>
+      <a id="test">
+  <img style="z-index: 2;" class="demo-box" src="http://i.imgur.com/sYyFoCF.png" />
+      </a>
+    </div>
+    </div>
+</div>
+
+
+</body>
+</html>
