@@ -126,7 +126,7 @@ void loop() {
   }
   else if (distanceLeftFront>0 && oldDistanceLeftFront>0 && distanceLeftFront<50) {
     fastRight();
-    delay(0);
+    delay(100);
     forward();
     delay(100);
   }
