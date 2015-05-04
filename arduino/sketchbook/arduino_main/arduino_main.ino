@@ -117,7 +117,7 @@ void loop() {
     //stop();
     //delay(2000);
     fastRight();
-    delay(100);
+    delay(150);
     fastLeft();
     delay(15); // Brake the turn
     //forward();
@@ -126,7 +126,7 @@ void loop() {
   }
   else if (distanceLeftFront>0 && oldDistanceLeftFront>0 && distanceLeftFront<50) {
     fastRight();
-    delay(50);
+    delay(0);
     forward();
     delay(100);
   }

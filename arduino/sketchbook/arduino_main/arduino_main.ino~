@@ -1,0 +1,71 @@
+const int ultraSound0out=5, ultraSound0In=4;
+int ultraSound0Distance;
+boolean ultraSound0IsDone;
+
+// For the ISR
+volatile byte portBState;
+volatile int interrupts;
+// End ISR vars
+
+ISR(PCINT0_vect) {
+  portBState = PINB;
+  interrupts++;  
+}
+
+void pciSetup(byte pin)
+{
+  *digitalPinToPCMSK(pin) |= bit (digitalPinToPCMSKbit(pin));  // enable pin
+  PCIFR  |= bit (digitalPinToPCICRbit(pin)); // clear any outstanding interrupt
+  PCICR  |= bit (digitalPinToPCICRbit(pin)); // enable interrupt for the group
+}
+
+void setup() {
+  pinMode(ultraSound0In,INPUT);
+  pinMode(ultraSound0out,OUTPUT);
+  // Initialize serial communication:
+  Serial.begin(9600);
+  //pciSetup(ultraSound0In);
+  interrupts=0;
+}
+
+void loop()
+{
+  // Send pulse to all ultrasound devices
+  sendUltrasoundPulse();  
+
+  // Receive pulse from ultrasound device
+  long duration = pulseIn(ultraSound0In, HIGH);
+
+  // convert the time into a distance
+  long cm = microsecondsToCentimeters(duration);
+ 
+ 
+ 
+  Serial.print(interrupts);
+  //Serial.print("cm");
+  //Serial.println();
+ 
+
+ 
+ 
+  delay(500);
+}
+
+long microsecondsToCentimeters(long microseconds)
+{
+  // The speed of sound is 340 m/s or 29 microseconds per centimeter.
+  // The ping travels out and back, so to find the distance of the
+  // object we take half of the distance travelled.
+  return microseconds / 29 / 2;
+}
+
+void sendUltrasoundPulse() { 
+  digitalWrite(ultraSound0out, LOW);
+  delayMicroseconds(2);
+  digitalWrite(ultraSound0out, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(ultraSound0out, LOW);  
+}
+  
+  
+
