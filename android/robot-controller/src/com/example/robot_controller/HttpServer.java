@@ -1,5 +1,7 @@
 package com.example.robot_controller;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,6 +11,9 @@ import java.net.URLConnection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+
 
 public class HttpServer extends NanoHTTPD{
     public HttpServer() throws IOException{
@@ -60,9 +65,28 @@ public class HttpServer extends NanoHTTPD{
                 }else{
                     //mbuffer = mContext.getAssets().open("index.html");
                     mbuffer = new FileInputStream("/sdcard/www/index.html");
+                        try {
+                            if (parms.get("x") == null)
+                                throw new IOException("No coordinates sent");
+
+                            File myFile = new File("/sdcard/www/coordinates.txt");
+                            myFile.createNewFile();
+                            FileOutputStream fOut = new FileOutputStream(myFile);
+                            OutputStreamWriter myOutWriter =new OutputStreamWriter(fOut);
+
+                            String varXoY = parms.get("x") + " " + parms.get("y");
+
+                            myOutWriter.write(varXoY);
+                            myOutWriter.close();
+                            fOut.close();
+
+                        } catch (IOException ioe) {ioe.printStackTrace();}
+
+                    }
                     return new NanoHTTPD.Response(Response.Status.OK, MIME_HTML, mbuffer);
-                }
             }
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
