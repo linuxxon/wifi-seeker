@@ -109,13 +109,17 @@ public abstract class NanoHTTPD {
      */
     public static final int SOCKET_READ_TIMEOUT = 5000;
     /**
-     * Common MIME type for dynamic content: plain text
+     * Common MIME type for dynamic content
      */
-    public static final String MIME_PLAINTEXT = "text/plain";
-    /**
-     * Common MIME type for dynamic content: html
-     */
-    public static final String MIME_HTML = "text/html";
+    public static final String
+            MIME_PLAINTEXT = "text/plain",
+            MIME_HTML = "text/html",
+            MIME_JS = "application/javascript",
+            MIME_CSS = "text/css",
+            MIME_PNG = "image/png",
+            MIME_BMP = "image/bmp",
+            MIME_DEFAULT_BINARY = "application/octet-stream",
+            MIME_XML = "text/xml";
     /**
      * Pseudo-Parameter to use to store the actual query string in the parameters map for later re-processing.
      */
