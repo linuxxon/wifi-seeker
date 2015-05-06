@@ -11,7 +11,10 @@ public class WifiApManager {
         WifiConfiguration wificonfiguration = null;
         try {
             //turn Wifi off
-            wifimanager.setWifiEnabled(false);
+            if (state)
+                wifimanager.setWifiEnabled(false);
+            else
+                wifimanager.setWifiEnabled(true);
 
             //enable/disable Wifi hotspot
             Method method = wifimanager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
