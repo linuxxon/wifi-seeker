@@ -1,0 +1,62 @@
+<html>
+<head>
+<script src="jquery-2.1.0.min.js"></script>
+<script>
+$(function() {
+
+
+	$("#test").click(function(e) {
+		offset = $(test).offset();
+		relativeX = (e.pageX) ;
+		relativeY = (e.pageY);
+		moveDot(relativeX, relativeY);
+	});
+	
+	moveDot = function(x, y) {
+		var color = '#EE0DD7';
+		var size = '7px';
+		$("#deltapos")
+				 .css('position', 'absolute')
+				 .css('left', relativeX-3 + 'px')
+				 .css('top', relativeY-3 + 'px')
+				 .css('width', size)
+				 .css('height', size)
+				 .css('background-color', color) 
+				 .css('z-index', '5');
+		console.log((relativeX-7)+':'+(relativeY-7));
+		// obs! ändra adressen till att hämtas från window.location.href, eller?
+		window.location.assign("?param1=" + relativeX+"&param2=" + relativeY);
+	};
+});
+
+
+</script>
+
+<?php 
+	if ($_GET['cmd'] == "scanWifi")
+		fopen("scanWifi.flag", "w");
+?>
+
+</head>
+
+<body>
+
+
+<div id="deltapos">
+</div>
+
+<div >
+  <a id="test">
+	<img style="z-index: 2;" width=988 height=595 class="demo-box" src="plan3.png" />
+  </a>
+</div>
+<form method="get" action="">
+	<input type="hidden" name="cmd" value="scanWifi"/>
+	<input type="submit" value="Scan WiFI"/>
+</form>
+
+</body>
+
+<a href=wifiLog.txt >Accesspunktsdata</a>
+
+</html>
