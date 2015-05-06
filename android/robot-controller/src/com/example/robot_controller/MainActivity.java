@@ -37,6 +37,8 @@ public class MainActivity extends Activity {
     TextView debugOut;
     StringBuilder logger;
     SimpleDateFormat timeString;
+
+    HttpServer server;
     
     boolean logAP=false;
     
@@ -45,13 +47,30 @@ public class MainActivity extends Activity {
     private ArrayList<ByteArray> mTransferedDataList = new ArrayList<ByteArray>();
     private ArrayAdapter<ByteArray> mDataAdapter;
 	// End of USB data
-    
+
+    public void onStop (Bundle stuff) {
+        try  {
+            server.stop();
+        }
+        catch (Exception e) {
+            // Schtuff
+        }
+    }
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);		
 		
 		logger = new StringBuilder();
 		timeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        try {
+            server = new HttpServer();
+            server.start();
+        }
+        catch (IOException e) {
+            // do sumthin
+        }
 		
 		setContentView(R.layout.activity_main);
 		debugOut = (TextView) findViewById(R.id.debug_window);
