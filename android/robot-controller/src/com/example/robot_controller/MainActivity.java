@@ -24,6 +24,7 @@ import android.hardware.usb.UsbManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -65,7 +66,7 @@ public class MainActivity extends Activity {
 		timeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         try {
-            server = new HttpServer();
+            server = new HttpServer(this);
             server.start();
         }
         catch (IOException e) {
@@ -112,7 +113,32 @@ public class MainActivity extends Activity {
                     handleTransferedData(intent, true);
                 } else if (ComService.DATA_SENT_INTERNAL_INTENT.equals(action)) {
                     handleTransferedData(intent, false);
-                } else if ("primavera.arduino.intent.action.REQUEST_RESPONSE".equals(action)) {
+                } else if ("com.example.robot_controller.WEBSCAN".equals(action)){
+                    hotspotOff(null);
+                    manualScan(null);
+
+                    debugOut.append("Received webb-request for manual scan\n");
+
+                    //Log.d("TAG", "whilelloop");
+
+                    // wait until scan is done
+
+                    // Get stuck, either in a state where logAP is always true or cant be changed.
+                    // alla funktionsanrop i en egen tråd
+                    //while(logAP);
+
+                    Log.d("TAG", "Chockolate");
+
+                    if (!logAP) {
+                        debugOut.append("Manual web scan\n");
+                        wifi.startScan();
+                        logger.append("Manual web scan " + timeString.format(Calendar.getInstance().getTime()) + "\n");
+                        logAP=true;
+                    }
+
+                    hotspotOn(null);
+                }
+                else if ("primavera.arduino.intent.action.REQUEST_RESPONSE".equals(action)) {
                     // USB command received
 //                	Toast.makeText(getBaseContext(), "Data Receieved"+intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA").get(0), Toast.LENGTH_SHORT).show();                    
                     List<String> commands = intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA");
@@ -168,6 +194,7 @@ public class MainActivity extends Activity {
         filter.addAction(ComService.DATA_SENT_INTERNAL_INTENT);
         filter.addAction("primavera.arduino.intent.action.REQUEST_RESPONSE");
         filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION); // Wifi "action"
+        filter.addAction("com.example.robot_controller.WEBSCAN");
         registerReceiver(wifiAndUsbReceiver, filter);
 
         /*mDataAdapter = new ArrayAdapter<ByteArray>(this, android.R.layout.simple_list_item_1, mTransferedDataList);
