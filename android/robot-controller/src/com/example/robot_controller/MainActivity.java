@@ -117,9 +117,7 @@ public class MainActivity extends Activity {
                     hotspotOff(null);
                     manualScan(null);
 
-                    debugOut.append("Received webb-request for manual scan\n");
-
-                    //Log.d("TAG", "whilelloop");
+                    Log.d("TAG", "whilelloop");
 
                     // wait until scan is done
 
@@ -129,14 +127,7 @@ public class MainActivity extends Activity {
 
                     Log.d("TAG", "Chockolate");
 
-                    if (!logAP) {
-                        debugOut.append("Manual web scan\n");
-                        wifi.startScan();
-                        logger.append("Manual web scan " + timeString.format(Calendar.getInstance().getTime()) + "\n");
-                        logAP=true;
-                    }
-
-                    hotspotOn(null);
+                    //hotspotOn(null);
                 }
                 else if ("primavera.arduino.intent.action.REQUEST_RESPONSE".equals(action)) {
                     // USB command received
@@ -149,7 +140,8 @@ public class MainActivity extends Activity {
                     	debugOut.append(command + " ");
                     }
                     debugOut.append("\n");
-                    
+
+
                     if (commands.get(0).equals("scanWifi")) {
                 		if (!logAP) {
 //                			debugOut.append("Command received: 'button wifi scan'\n");
@@ -178,6 +170,7 @@ public class MainActivity extends Activity {
             			logger.append("\n");
             			
             			logAP=false; // Stop logging until log is true
+                        hotspotOn(null);
             		}        		
             		else {
             			debugOut.append("Wifi scanned, not logging\n");  
@@ -280,10 +273,11 @@ public class MainActivity extends Activity {
 			debugOut.append("Scanning manually\n");
 			wifi.startScan();
 			logger.append("Manual scan " + timeString.format(Calendar.getInstance().getTime()) + "\n");
+            logger.append("Coordinates: "+ server.getVar() + "\n");
 			logAP=true;
 		}		
 	}
-	
+
 	public void saveLog(View view) {
 		try {
 			File myFile = new File("/sdcard/www/wifiLog.txt");
@@ -310,6 +304,13 @@ public class MainActivity extends Activity {
     public void hotspotOff(View view) {
         WifiApManager.setHotspotState(this, false);
         debugOut.append("Hotspot turning off\n");
+        wifi.setWifiEnabled(true);
+    }
+
+    public void showData() {
+
+
+
     }
 }
  
