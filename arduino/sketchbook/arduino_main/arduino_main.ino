@@ -8,7 +8,10 @@
 #define ultraSound1out 6
 #define ultraSound2in 7
 #define ultraSound2out 8
-#define button 0
+#define button A0
+#define modeLED 11
+#define NORMALMODE 0
+#define HOTSPOTMODE 1
 
 #include <PWM.h>
 
@@ -16,8 +19,10 @@ int32_t frequency = 500; //frequency (in Hz)
 int speed=0,distanceFront=0,oldDistanceFront=0,distanceLeftFront=0,oldDistanceLeftFront=0,distanceLeft=0,oldDistanceLeft=0;
 bool isColliding=false;
 
+int MODE = NORMALMODE;
+bool lastButtonValue = false;
+
 void setup() {
-  
  pinMode(right_power, OUTPUT); 
  pinMode(right_direction, OUTPUT);
  pinMode(left_power, OUTPUT); 
@@ -28,7 +33,12 @@ void setup() {
  pinMode(ultraSound1out,OUTPUT);
  pinMode(ultraSound2in, INPUT);
  pinMode(ultraSound2out,OUTPUT);
+ pinMode(button, INPUT);
+ pinMode(modeLED, OUTPUT);
  InitTimersSafe();  //init Timers except Timer0
+ 
+ // Set LED off as we start in normal mode
+ digitalWrite(modeLED, HIGH);
  
  Serial.begin(9600);
  
@@ -89,71 +99,100 @@ void fastRight() {
   pwmWrite(left_power, 255);
 }
 
-void loop() {   
-  oldDistanceFront = distanceFront;
-  distanceFront = getDistanceFront(); 
+void loop() {
+  if (Serial.available())
+    readSerial();
   
-  delay(50); // Wait for echoes
-  oldDistanceLeftFront = distanceLeftFront;
-  distanceLeftFront = getDistanceLeftFront(); 
-  
-  delay(50); // Wait for echoes
-  oldDistanceLeft=distanceLeft;
-  distanceLeft = getDistanceLeft(); 
-  
-  speed = analogRead(5)/4;
-  
-  Serial.print("Speed: ");
-  Serial.print(speed);  
-  Serial.print(" Front sensor: ");
-  Serial.print(distanceFront);
-  Serial.print(" Front-left sensor: ");
-  Serial.print(distanceLeftFront);
-  Serial.print(" Left sensor: ");
-  Serial.print(distanceLeft);
-  Serial.print("\n");  
-  
-  if ((distanceFront>0 && oldDistanceFront>0 && distanceFront<70)) {
-    //stop();
-    //delay(2000);
-    fastRight();
-    delay(150);
-    fastLeft();
-    delay(15); // Brake the turn
-    //forward();
-    //delay(50);
-    //start(250);
+  bool buttonValue = analogRead(button) < 512 ? false : true;
+  if (buttonValue && !lastButtonValue) {
+    if (MODE == HOTSPOTMODE) {
+      digitalWrite(modeLED, HIGH);
+      MODE = NORMALMODE;
+    }
+    else if (MODE == NORMALMODE) {
+      digitalWrite(modeLED, LOW);
+      stop();
+      MODE = HOTSPOTMODE;
+    }
   }
-  else if (distanceLeftFront>0 && oldDistanceLeftFront>0 && distanceLeftFront<50) {
-    fastRight();
-    delay(100);
-    forward();
-    delay(100);
+  lastButtonValue = buttonValue;
+  
+  if (MODE == HOTSPOTMODE) {
+    // Add code here if you want to
   }
-  else {        
-    if (distanceLeft>0 && oldDistanceLeft>0 && distanceLeft < 25) {
+  else if (MODE == NORMALMODE) {
+    oldDistanceFront = distanceFront;
+    distanceFront = getDistanceFront(); 
+    
+    delay(50); // Wait for echoes
+    oldDistanceLeftFront = distanceLeftFront;
+    distanceLeftFront = getDistanceLeftFront(); 
+    
+    delay(50); // Wait for echoes
+    oldDistanceLeft=distanceLeft;
+    distanceLeft = getDistanceLeft(); 
+    
+    speed = analogRead(5)/4;
+    
+    Serial.print("Speed: ");
+    Serial.print(speed);  
+    Serial.print(" Front sensor: ");
+    Serial.print(distanceFront);
+    Serial.print(" Front-left sensor: ");
+    Serial.print(distanceLeftFront);
+    Serial.print(" Left sensor: ");
+    Serial.print(distanceLeft);
+    Serial.print("\n");  
+    
+    if ((distanceFront>0 && oldDistanceFront>0 && distanceFront<70)) {
+      //stop();
+      //delay(2000);
       fastRight();
-      delay(30);
-      forward();
-      delay(100);
-    }  
-    if (distanceLeft > 30 && distanceLeft < 60) {
+      delay(150);
       fastLeft();
-      delay(30);
-      forward();
-      delay(100);
-    } 
-    if (distanceLeft ==0 || distanceLeft > 60) {
-      fastLeft();
-      delay(100);
-      fastRight();
       delay(15); // Brake the turn
+      //forward();
+      //delay(50);
+      //start(250);
+    }
+    else if (distanceLeftFront>0 && oldDistanceLeftFront>0 && distanceLeftFront<50) {
+      fastRight();
+      delay(100);
       forward();
       delay(100);
     }
+    else {        
+      if (distanceLeft>0 && oldDistanceLeft>0 && distanceLeft < 25) {
+        fastRight();
+        delay(30);
+        forward();
+        delay(100);
+      }  
+      if (distanceLeft > 30 && distanceLeft < 60) {
+        fastLeft();
+        delay(30);
+        forward();
+        delay(100);
+      } 
+      if (distanceLeft ==0 || distanceLeft > 60) {
+        fastLeft();
+        delay(100);
+        fastRight();
+        delay(15); // Brake the turn
+        forward();
+        delay(100);
+      }
+    }
+    forward(); 
   }
-  forward(); 
+}
 
+void readSerial () {
+  char cmd, index;
+  cmd = Serial.read();
+  while (!Serial.available());
+  index = Serial.read();
+  // FIXS THIS FUCKER
 }
 
 int getDistanceFront() { 
