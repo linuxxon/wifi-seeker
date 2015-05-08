@@ -1,82 +1,89 @@
 <html>
 <head>
+	<script src="jquery-2.1.0.min.js"></script>
+	<script>
+		function showInfo(id){
+			document.getElementById("infobox").innerHTML = data[id][2];
+			document.querySelector("div").style.display = "block";
+		}
 
+		addDot = function(id, x, y, data) {
+			var color = '#0000FF';
+			var sizeB = '16px';
+			var sizeH = '10px';
+			
+			$("body").append(
+				$('<button id=\"'+id+'\" onClick=\"showInfo(this.id);\"></button>')
+					.css('position', 'absolute')
+					.css('top', x + 'px')
+					.css('left', y + 'px')
+					.css('width', sizeB)
+					.css('height', sizeH)
+					.css('background-color', color)
+			);
+		};
 
-<script src="jquery-2.1.0.min.js"></script>
-<script>
-$(function() {
+		moveDot = function(x, y) {
+			var color = '#EE0DD7';
+			var size = '7px';
+			$("#robotPos")
+					 .css('position', 'absolute')
+					 .css('left', x-3 + 'px')
+					 .css('top', y-3 + 'px')
+					 .css('width', size)
+					 .css('height', size)
+					 .css('background-color', color) 
+					 .css('z-index', '5');
+		};
 
-	
-	
-	$("#test").click(function(e) {
-		offset = $(test).offset();
-		relativeX = (e.pageX) ;
-		relativeY = (e.pageY);
-		moveDot(relativeX, relativeY);
-	});
-	
-	moveDot = function(x, y) {
-		var color = '#EE0DD7';
-		var size = '7px';
-		$("#deltapos")
-				 .css('position', 'absolute')
-				 .css('left', x-3 + 'px')
-				 .css('top', y-3 + 'px')
-				 .css('width', size)
-				 .css('height', size)
-				 .css('background-color', color) 
-				 .css('z-index', '5');
-		console.log((relativeX-7)+':'+(relativeY-7));
-		// obs! �ndra adressen till att h�mtas fr�n window.location.href, eller?
-		window.location.assign("?x=" + relativeX+"&y=" + relativeY);
-
-	};
-	moveDot(Url.get.x, Url.get.y);
-});
-
-Url = {
-    get get(){
-        var vars= {};
-        if(window.location.search.length!==0) 
-        	window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value){
-                key=decodeURIComponent(key);
-                if(typeof vars[key]==="undefined") {
-                	vars[key]= decodeURIComponent(value);
-                }
-                else {
-                	vars[key]= [].concat(vars[key], decodeURIComponent(value));
-                }
-            });
-        return vars;
-    }
-};
-
-</script>
-
-
-
-<?php 
-	if ($_GET['cmd'] == "scanWifi")
-		fopen("scanWifi.flag", "w");
-?>
-
+		$(document).ready ( function(){
+			coords = [0,0];
+			// Example of what data could look like. Should be in this format
+			//data = [[50,50,"datatatatatatatata"],[100,100,"3333"],[200,200,"44444444"],[300,300,"55555555555"]];
+			data = [];
+			
+			for (i = 0; i < data.length; i++) {
+				addDot(i, data[i][0], data[i][1], data[i][2]);
+			}
+			
+			moveDot(Url.get.x, Url.get.y);
+			
+			$("#map").click(function(e) {
+				offset = $(map).offset();
+				relativeX = (e.pageX) ;
+				relativeY = (e.pageY);
+				//moveDot(relativeX, relativeY);
+				window.location.assign("?x=" + relativeX+"&y=" + relativeY);
+			});
+		});
+			
+		Url = {
+			get get(){
+				var vars= {};
+				if(window.location.search.length!==0) 
+					window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value){
+						key=decodeURIComponent(key);
+						if(typeof vars[key]==="undefined") {
+							vars[key]= decodeURIComponent(value);
+						}
+						else {
+							vars[key]= [].concat(vars[key], decodeURIComponent(value));
+						}
+					});
+				return vars;
+			}
+		};
+	</script>
 </head>
-
 <body>
-
-
-<div id="deltapos">
-</div>
-
-<div >
-  <a id="test">
-	<img style="z-index: 2;" width=988 height=595 class="demo-box" src="plan3.png" />
-  </a>
-</div>
-
-<div>
-	<table width="200px">
-		<tbody>
+	<div id="robotPos"></div>
+	<div >
+	  <a id="map">
+		<img style="z-index: 2;" width=988 height=595 class="demo-box" src="plan3_norr.png" />
+	  </a>
+	</div>
+	<div>
+		<table width = "200px">
 			<tr>
 				<td>
 					<a href="?cmd=scanWifi"><button>Scan WiFi</button></a>
@@ -85,11 +92,10 @@ Url = {
 					<a href="wifiLog.txt"><button>Show Result</button></a>
 				</td>
 			</tr>
-	</table>
-</div>
-
-
-</body>
-
-	
+		</table>
+	</div>
+	<h2>Accesspoint info</h2>
+	<div id="infobox">
+	</div>
+</body>		
 </html>
