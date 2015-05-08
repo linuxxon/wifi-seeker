@@ -56,11 +56,13 @@
 	
 		//	}
 			$("#map").click(function(e) {
-				offset = $(map).offset();
-				relativeX = (e.pageX) ;
-				relativeY = (e.pageY);
-				//moveDot(relativeX, relativeY);
-				window.location.assign("?x=" + relativeX+"&y=" + relativeY);
+				if (confirm("Flytta robots position?")) {
+					offset = $(map).offset();
+					relativeX = (e.pageX) ;
+					relativeY = (e.pageY);
+					//moveDot(relativeX, relativeY);
+					window.location.assign("?x=" + relativeX+"&y=" + relativeY);
+				}
 			});
 		});
 			
