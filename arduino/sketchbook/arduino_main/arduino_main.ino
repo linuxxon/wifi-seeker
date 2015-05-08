@@ -107,10 +107,14 @@ void loop() {
   if (buttonValue && !lastButtonValue) {
     if (MODE == HOTSPOTMODE) {
       digitalWrite(modeLED, HIGH);
+      Serial.print("normalMode");
+      Serial.write(0);
       MODE = NORMALMODE;
     }
     else if (MODE == NORMALMODE) {
       digitalWrite(modeLED, LOW);
+      Serial.print("hotspotMode");
+      Serial.write(0);
       stop();
       MODE = HOTSPOTMODE;
     }
