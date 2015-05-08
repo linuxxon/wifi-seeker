@@ -3,7 +3,6 @@ package com.example.robot_controller;
 import java.io.BufferedReader;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +12,6 @@ import java.io.InputStreamReader;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -52,24 +50,22 @@ public class HttpServer extends NanoHTTPD{
         }
     }
 
-    public static String insertFileContent(FileInputStream fis, String s) throws IOException
+    public static String editFileRow(FileInputStream fis, String ref, String s) throws IOException
     {
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         try {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
-                if(line.contains("coords =")) {
+                if(line.contains(ref)) {
 
-                    String line1 = "coords =" + s + ";";
-                    sb.append(line1);
+                    sb.append(s);
                     sb.append('\n');
                 }
                 else {
                     sb.append(line);
                     sb.append('\n');
                 }
-
             }
             return sb.toString();
         } finally {
@@ -139,7 +135,7 @@ public class HttpServer extends NanoHTTPD{
 
                         mbuffer = new FileInputStream("/sdcard/www/index.html");
                         // insert coordinates into html-code
-                        String mbufferString= insertFileContent((FileInputStream) mbuffer, currentCoords);
+                        String mbufferString= editFileRow((FileInputStream) mbuffer, "coords =", "coords =" +currentCoords);
 
                         return new NanoHTTPD.Response(Response.Status.OK, MIME_HTML, mbufferString);
 
