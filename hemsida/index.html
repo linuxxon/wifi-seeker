@@ -37,17 +37,24 @@
 		};
 
 		$(document).ready ( function(){
-			coords = [0,0];
+			coords = null;
 			// Example of what data could look like. Should be in this format
 			//data = [[50,50,"datatatatatatatata"],[100,100,"3333"],[200,200,"44444444"],[300,300,"55555555555"]];
 			data = [];
 			
+			
+			
 			for (i = 0; i < data.length; i++) {
 				addDot(i, data[i][0], data[i][1], data[i][2]);
 			}
-			
+		
 			moveDot(Url.get.x, Url.get.y);
-			
+			if(coords != null){
+				moveDot(coords[0], coords[1]);
+			}
+		//	else{
+	
+		//	}
 			$("#map").click(function(e) {
 				offset = $(map).offset();
 				relativeX = (e.pageX) ;
