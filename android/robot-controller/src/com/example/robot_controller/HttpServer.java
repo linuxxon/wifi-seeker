@@ -1,6 +1,10 @@
 package com.example.robot_controller;
 
 import java.io.BufferedReader;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,16 +13,21 @@ import java.io.InputStreamReader;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
 
 public class HttpServer extends NanoHTTPD{
-    public HttpServer() throws IOException{
+    public HttpServer(Context c) throws IOException{
         super (null,8080 );
+        context = c;
     }
 
+    Context context;
+    String varXoY = "";
+	
     String currentCoords = null;
 
     public void saveCoordinates(Map<String, String> params) {
@@ -77,9 +86,6 @@ public class HttpServer extends NanoHTTPD{
         final StringBuilder buf = new StringBuilder();
         InputStream mbuffer = null;
 
-
-
-
         try {
             if(uri!=null){
                 if(uri.contains(".js")){
@@ -119,8 +125,13 @@ public class HttpServer extends NanoHTTPD{
                     streamResponse.addHeader( "Connection", "Keep-alive");
                     return streamResponse;
                 }else{
-
-                    if (parms.get("x") != null && parms.get("y") != null){
+                    //mbuffer = mContext.getAssets().open("index.html");
+                    mbuffer = new FileInputStream("/sdcard/www/index.html");
+                    if(parms.get("cmd" ) != null && parms.get("cmd").equals("scanWifi")){
+						Intent intent = new Intent("com.example.robot_controller.WEBSCAN");
+                        context.sendBroadcast(intent);
+					}	
+                    else if (parms.get("x") != null && parms.get("y") != null){
                         saveCoordinates(parms);
                     }
 
@@ -152,4 +163,5 @@ public class HttpServer extends NanoHTTPD{
 
     }
 
+    public String getVar() {return currentCoords;}
 }
