@@ -100,9 +100,6 @@ void fastRight() {
 }
 
 void loop() {
-  if (Serial.available())
-    readSerial();
-  
   bool buttonValue = analogRead(button) < 512 ? false : true;
   if (buttonValue && !lastButtonValue) {
     if (MODE == HOTSPOTMODE) {
@@ -191,13 +188,6 @@ void loop() {
   }
 }
 
-void readSerial () {
-  char cmd, index;
-  cmd = Serial.read();
-  while (!Serial.available());
-  index = Serial.read();
-  // FIXS THIS FUCKER
-}
 
 int getDistanceFront() { 
   int distance=0;
