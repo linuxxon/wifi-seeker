@@ -9,14 +9,13 @@
 
 		addDot = function(id, x, y, data) {
 			var color = '#0000FF';
-			var sizeB = '16px';
-			var sizeH = '10px';
-			
+			var sizeB = 16;
+			var sizeH = 10;
 			$("body").append(
 				$('<button id=\"'+id+'\" onClick=\"showInfo(this.id);\"></button>')
 					.css('position', 'absolute')					
-					.css('left', x + 'px')
-					.css('top', y + 'px')
+					.css('left', x-(sizeB/2) + 'px')
+					.css('top', y-(sizeH/2) + 'px')
 					.css('width', sizeB)
 					.css('height', sizeH)
 					.css('background-color', color)
@@ -92,13 +91,19 @@
 	  </a>
 	</div>
 	<div>
-		<table width = "200px">
+		<table>
 			<tr>
 				<td>
 					<a href="?cmd=scanWifi"><button>Scan WiFi</button></a>
 				</td>
 				<td>
 					<a href="wifiLog.txt"><button>Show Result</button></a>
+				</td>
+				<td>
+					<a href="?cmd=clearResult"><button>Clear Result</button></a>
+				</td>	
+				<td>
+					<a href=""><button>Refresh</button></a>
 				</td>
 			</tr>
 		</table>
