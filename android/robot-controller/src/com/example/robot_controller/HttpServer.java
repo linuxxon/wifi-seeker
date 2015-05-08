@@ -3,9 +3,11 @@ package com.example.robot_controller;
 import java.io.BufferedReader;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.Random;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Scanner;
 
 
 public class HttpServer extends NanoHTTPD{
@@ -37,7 +40,7 @@ public class HttpServer extends NanoHTTPD{
             myFile.createNewFile();
             FileOutputStream fOut = new FileOutputStream(myFile);
             OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-            String coords = "[" + params.get("x") + "," + params.get("y")+ "]";
+            String coords = params.get("x") + "," + params.get("y");
 
             // Update class-wide variable of current coordinates
             currentCoords =coords;
@@ -123,30 +126,36 @@ public class HttpServer extends NanoHTTPD{
                 }else{
                     //mbuffer = mContext.getAssets().open("index.html");
                     mbuffer = new FileInputStream("/sdcard/www/index.html");
-                    if(parms.get("cmd" ) != null && parms.get("cmd").equals("scanWifi")){
-						Intent intent = new Intent("com.example.robot_controller.WEBSCAN");
-                        context.sendBroadcast(intent);
+                    if(parms.get("cmd" ) != null) {
+                        if (parms.get("cmd").equals("clearResult")) {
+                            Intent clearResult = new Intent("com.example.robot_controller.CLEARRESULT");
+                            context.sendBroadcast(clearResult);
+                        }
+                        else if (parms.get("cmd").equals("scanWifi")){
+                            Intent intent = new Intent("com.example.robot_controller.WEBSCAN");
+                            context.sendBroadcast(intent);
+                        }
 					}	
                     else if (parms.get("x") != null && parms.get("y") != null){
                         saveCoordinates(parms);
                     }
 
+                    String data = new Scanner(new File("/sdcard/www/wifiLog.txt")).useDelimiter("\\A").next();
+                    String mbufferString = "";
                     if(currentCoords != null){
-
                         mbuffer = new FileInputStream("/sdcard/www/index.html");
                         // insert coordinates into html-code
-                        String mbufferString= editFileRow((FileInputStream) mbuffer, "coords =", "coords =" +currentCoords);
-
-                        return new NanoHTTPD.Response(Response.Status.OK, MIME_HTML, mbufferString);
-
+                        mbufferString= editFileRow((FileInputStream) mbuffer, "coords =", "coords =[" +currentCoords+"]");
+                        mbufferString = mbufferString.replaceFirst("data = \\[\\];", "data = "+data+";" );
                     }
                     else {
                         mbuffer = new FileInputStream("/sdcard/www/index.html");
+                        mbufferString = editFileRow((FileInputStream) mbuffer, "data = [];", "data = "+data+";");
                     }
-
+                    return new NanoHTTPD.Response(Response.Status.OK, MIME_HTML, mbufferString);
                 }
 
-                return new NanoHTTPD.Response(Response.Status.OK, MIME_HTML, mbuffer);
+                //return new NanoHTTPD.Response(Response.Status.OK, MIME_HTML, mbuffer);
             }
 
 

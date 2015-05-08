@@ -116,24 +116,14 @@ public class MainActivity extends Activity {
                 } else if ("com.example.robot_controller.WEBSCAN".equals(action)){
                     hotspotOff(null);
                     manualScan(null);
-
-                    Log.d("TAG", "whilelloop");
-
-                    // wait until scan is done
-
-                    // Get stuck, either in a state where logAP is always true or cant be changed.
-                    // alla funktionsanrop i en egen tråd
-                    //while(logAP);
-
-                    Log.d("TAG", "Chockolate");
-
-                    //hotspotOn(null);
-                }
-                else if ("primavera.arduino.intent.action.REQUEST_RESPONSE".equals(action)) {
+                } else if ("com.example.robot_controller.CLEARRESULT".equals(action)){
+                    logger = new StringBuilder();
+                    saveLog(null);
+                } else if ("primavera.arduino.intent.action.REQUEST_RESPONSE".equals(action)) {
                     // USB command received
-//                	Toast.makeText(getBaseContext(), "Data Receieved"+intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA").get(0), Toast.LENGTH_SHORT).show();                    
+//                	Toast.makeText(getBaseContext(), "Data Receieved"+intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA").get(0), Toast.LENGTH_SHORT).show();
                     List<String> commands = intent.getStringArrayListExtra("primavera.arduino.intent.extra.DATA");
-              
+
                     debugOut.append("Command received: " + commands.get(0) + "\n");
                     debugOut.append("Command buffer: ");
                     for (String command : commands) {
@@ -148,7 +138,7 @@ public class MainActivity extends Activity {
                 			wifi.startScan();
                 			logger.append("Button scan " + timeString.format(Calendar.getInstance().getTime()) + "\n");
                 			logAP=true;
-                		}	
+                		}
                     }
                     else if (commands.get(0).equals("hotspotMode")) {
                         hotspotOn(null);
@@ -156,26 +146,26 @@ public class MainActivity extends Activity {
                     else if (commands.get(0).equals("scanningMode")) {
                         hotspotOff(null);
                     }
-                }       		
-                else { 
+                }
+                else {
                 	// Wifi receiving
                 	if (logAP){
-            			debugOut.append("Wifi scanned, logging\n");  
-            			
+            			debugOut.append("Wifi scanned, logging\n");
+
             			List<android.net.wifi.ScanResult> scanResults = wifi.getScanResults();
-            			
+
             			for(android.net.wifi.ScanResult result: scanResults){
-            				logger.append(result.SSID + " " + result.BSSID + " " + result.level + " " + result.frequency + "\n");
+            				logger.append(result.SSID + " " + result.BSSID + " " + result.level + " " + result.frequency + "<br/>");
             		    }
-            			logger.append("\n");
-            			
+                        logger.append(" \"],");
+
             			logAP=false; // Stop logging until log is true
                         hotspotOn(null);
-            		}        		
-            		else {
-            			debugOut.append("Wifi scanned, not logging\n");  
             		}
-                }        		
+            		else {
+            			debugOut.append("Wifi scanned, not logging\n");
+            		}
+                }
         	}
         }
         
@@ -188,6 +178,7 @@ public class MainActivity extends Activity {
         filter.addAction("primavera.arduino.intent.action.REQUEST_RESPONSE");
         filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION); // Wifi "action"
         filter.addAction("com.example.robot_controller.WEBSCAN");
+        filter.addAction("com.example.robot_controller.CLEARRESULT");
         registerReceiver(wifiAndUsbReceiver, filter);
 
         /*mDataAdapter = new ArrayAdapter<ByteArray>(this, android.R.layout.simple_list_item_1, mTransferedDataList);
@@ -272,8 +263,9 @@ public class MainActivity extends Activity {
 		if (!logAP) {
 			debugOut.append("Scanning manually\n");
 			wifi.startScan();
-			logger.append("Manual scan " + timeString.format(Calendar.getInstance().getTime()) + "\n");
-            logger.append("Coordinates: "+ server.getVar() + "\n");
+            logger.append("["+server.getVar()+",");
+			logger.append("\"Manual scan " + timeString.format(Calendar.getInstance().getTime()) + "<br/>");
+            logger.append("Coordinates: "+ server.getVar() + "<br/>");
 			logAP=true;
 		}		
 	}
@@ -284,7 +276,9 @@ public class MainActivity extends Activity {
 	        myFile.createNewFile();
 	        FileOutputStream fOut = new FileOutputStream(myFile);
 	        OutputStreamWriter myOutWriter =new OutputStreamWriter(fOut);
+            myOutWriter.write("[");
 	        myOutWriter.write(logger.toString());
+            myOutWriter.write("]");
 	        myOutWriter.close();
 	        fOut.close();
 	       
