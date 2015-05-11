@@ -29,7 +29,7 @@
 #define ultraSound2out 8
 #define button A0
 #define modeLED 11
-#define NORMALMODE 0
+#define SCANNINGMODE 0
 #define HOTSPOTMODE 1
 
 #include <PWM.h>
@@ -38,7 +38,7 @@ int32_t frequency = 500; //frequency (in Hz)
 int speed=0,distanceFront=0,oldDistanceFront=0,distanceLeftFront=0,oldDistanceLeftFront=0,distanceLeft=0,oldDistanceLeft=0;
 bool isColliding=false;
 
-int MODE = NORMALMODE;
+int MODE = SCANNINGMODE;
 bool lastButtonValue = false;
 
 void setup() {
@@ -123,11 +123,11 @@ void loop() {
   if (buttonValue && !lastButtonValue) {
     if (MODE == HOTSPOTMODE) {
       digitalWrite(modeLED, HIGH);
-      Serial.print("normalMode");
+      Serial.print("scanningMode");
       Serial.write(0);
       MODE = NORMALMODE;
     }
-    else if (MODE == NORMALMODE) {
+    else if (MODE == SCANNINGMODE) {
       digitalWrite(modeLED, LOW);
       Serial.print("hotspotMode");
       Serial.write(0);
@@ -140,7 +140,7 @@ void loop() {
   if (MODE == HOTSPOTMODE) {
     // Add code here if you want to
   }
-  else if (MODE == NORMALMODE) {
+  else if (MODE == SCANNINGMODE) {
     oldDistanceFront = distanceFront;
     distanceFront = getDistanceFront(); 
     
