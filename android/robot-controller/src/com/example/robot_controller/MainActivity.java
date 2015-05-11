@@ -117,7 +117,7 @@ public class MainActivity extends Activity {
                     hotspotOff(null);
                     manualScan(null);
                 } else if ("com.example.robot_controller.CLEARRESULT".equals(action)){
-                    logger = new StringBuilder();
+                    logger = new StringBuilder("");
                     saveLog(null);
                 } else if ("primavera.arduino.intent.action.REQUEST_RESPONSE".equals(action)) {
                     // USB command received
@@ -263,9 +263,9 @@ public class MainActivity extends Activity {
 		if (!logAP) {
 			debugOut.append("Scanning manually\n");
 			wifi.startScan();
-            logger.append("["+server.getVar()+",");
+            logger.append("["+server.getCoordinates()+",");
 			logger.append("\"Manual scan " + timeString.format(Calendar.getInstance().getTime()) + "<br/>");
-            logger.append("Coordinates: "+ server.getVar() + "<br/>");
+            logger.append("Coordinates: "+ server.getCoordinates() + "<br/>");
 			logAP=true;
 		}		
 	}

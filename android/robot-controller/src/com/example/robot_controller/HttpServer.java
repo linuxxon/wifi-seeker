@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +28,6 @@ public class HttpServer extends NanoHTTPD{
     }
 
     Context context;
-    String varXoY = "";
 	
     String currentCoords = null;
 
@@ -50,6 +50,7 @@ public class HttpServer extends NanoHTTPD{
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            currentCoords = "-1,-1";
         }
     }
 
@@ -168,5 +169,16 @@ public class HttpServer extends NanoHTTPD{
 
     }
 
-    public String getVar() {return currentCoords;}
+    // Get coordinates, if no coordinates are found, load from file.
+    public String getCoordinates() {
+        if (currentCoords == null) {
+            try {
+                currentCoords = new Scanner(new File("/sdcard/www/coordinates.txt")).useDelimiter("\\A").next();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return currentCoords;
+    }
 }
