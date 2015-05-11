@@ -38,7 +38,7 @@ int32_t frequency = 500; //frequency (in Hz)
 int speed=0,distanceFront=0,oldDistanceFront=0,distanceLeftFront=0,oldDistanceLeftFront=0,distanceLeft=0,oldDistanceLeft=0;
 bool isColliding=false;
 
-int MODE = SCANNINGMODE;
+int MODE = HOTSPOTMODE;
 bool lastButtonValue = false;
 
 void setup() {
@@ -64,7 +64,6 @@ void setup() {
  // might not need to set both these pins, due to being on the same timer
  SetPinFrequencySafe(right_power, frequency); 
  SetPinFrequencySafe(left_power, frequency); 
- start(250);
 }
 
 
