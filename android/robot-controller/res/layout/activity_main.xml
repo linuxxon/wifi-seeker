@@ -14,12 +14,6 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Start listening to robot"
-        android:onClick="listenToRobot"/>
-    
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
         android:text="Manual wifi scan"
         android:onClick="manualScan"/>
     
