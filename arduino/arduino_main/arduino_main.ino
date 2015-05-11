@@ -125,7 +125,7 @@ void loop() {
       digitalWrite(modeLED, HIGH);
       Serial.print("scanningMode");
       Serial.write(0);
-      MODE = NORMALMODE;
+      MODE = SCANNINGMODE;
     }
     else if (MODE == SCANNINGMODE) {
       digitalWrite(modeLED, LOW);
@@ -153,16 +153,6 @@ void loop() {
     distanceLeft = getDistanceLeft(); 
     
     speed = analogRead(5)/4;
-    
-    Serial.print("Speed: ");
-    Serial.print(speed);  
-    Serial.print(" Front sensor: ");
-    Serial.print(distanceFront);
-    Serial.print(" Front-left sensor: ");
-    Serial.print(distanceLeftFront);
-    Serial.print(" Left sensor: ");
-    Serial.print(distanceLeft);
-    Serial.print("\n");  
     
     if ((distanceFront>0 && oldDistanceFront>0 && distanceFront<70)) {
       //stop();
