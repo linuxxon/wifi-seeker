@@ -157,20 +157,18 @@ void loop() {
       //stop();
       //delay(2000);
       fastRight();
-      delay(100);
+      delay(150);
       fastLeft();
       delay(15); // Brake the turn
       //forward();
       //delay(50);
       //start(250);
     }
-    else if (distanceLeftFront>0 && oldDistanceLeftFront>0 && distanceLeftFront<70) {
+    else if (distanceLeftFront>0 && oldDistanceLeftFront>0 && distanceLeftFront<50) {
       fastRight();
-      delay(70);
-      fastLeft();
-      delay(15); // Brake the turn
-      //forward();
-      //delay(100);
+      delay(100);
+      forward();
+      delay(100);
     }
     else {        
       if (distanceLeft>0 && oldDistanceLeft>0 && distanceLeft < 25) {
@@ -242,5 +240,18 @@ long microsecondsToCentimeters(long microseconds)
   // object we take half of the distance travelled.
   return microseconds / 29 / 2;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
